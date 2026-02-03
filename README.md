@@ -46,15 +46,40 @@ This project is a modular and extensible calculator built in C++. It serves as a
    cd Calculator
    ```
 
-2. **Compile the source code:**
+2. **Quick compile (single command)** — useful for quick tests or if you don't use CMake:
    ```bash
-   g++ -std=c++17 -O2 -Wall SimpleCalculator.cpp -o calculator
+   g++ -std=c++17 -O2 -Wall SimpleCalculator.cpp modules/*.cpp -o calculator
+   # or use the provided Makefile
+   make
    ```
 
-3. **Run the calculator:**
+3. **Recommended: Build with CMake (recommended for development)**
+   ```bash
+   mkdir -p build
+   cd build
+   cmake .. -DCMAKE_BUILD_TYPE=Release
+   cmake --build .
+   ```
+
+4. **Run the calculator:**
    ```sh
    ./calculator
    ```
+
+## Project Structure
+
+- `SimpleCalculator.cpp` — the program entry point and the menu dispatcher. It includes headers from `modules/` and calls module entry functions.
+- `modules/` — each feature has its own pair of files: `modules/<feature>.h` (declaration) and `modules/<feature>.cpp` (implementation). This keeps features isolated and easy to extend.
+- `Makefile` — simple build helper for quick builds.
+- `CMakeLists.txt` — recommended cross-platform build configuration (preferred for development and CI).
+
+### Adding a new module
+1. Add `modules/<feature>.h` with a function declaration, e.g. `void performFeature();`.
+2. Implement the function in `modules/<feature>.cpp`.
+3. `#include "modules/<feature>.h"` in `SimpleCalculator.cpp` and add an entry to the `menu` map (e.g. `{"11", performFeature}`).
+4. Rebuild with `make` or `cmake --build .`.
+
+This modular layout makes it easy to work on one feature at a time, speeds up incremental compilation, and simplifies testing and maintenance.
 
 ## Usage
 
@@ -107,7 +132,7 @@ false
 
 The development plan includes the following milestones:
 
-- [] Phase 1: Implement Basic Arithmetic.
+- [ ] Phase 1: Implement Basic Arithmetic.
 - [ ] Phase 2: Implement Trigonometry.
 - [ ] Phase 3: Implement Logarithms.
 - [ ] Phase 4: Robust parsing for all basic types (Scalar, Vector, Matrix).

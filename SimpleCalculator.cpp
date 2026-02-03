@@ -1,58 +1,70 @@
-//basic calculator to add and subtract two numbers
-#include<iostream>
-//using namespace std;
-#include <limits>  
+#include <iostream>
+#include <limits>
 #include <cmath>
+#include <string>
+#include <map>
+#include <functional>
 
 
 void displayWelcomeMessage(){
     std::cout << " ******** C++ Basic Calculator ******" <<std::endl;
 }
-void displayMainMenu();
-void performBasicMath();
-void performTrigonometry();
-void performLogarithms();
 
-int main(){  
-    char choice;
+void displayMainMenu();
+
+// Module interfaces
+#include "modules/basicmath.h"
+#include "modules/trigonometry.h"
+#include "modules/logarithms.h"
+#include "modules/vectors.h"
+#include "modules/matrices.h"
+#include "modules/complexnumbers.h"
+#include "modules/booleanalgebra.h"
+#include "modules/integrals.h"
+#include "modules/derivatives.h"
+#include "modules/numericalmethods.h"
+
+int main(){
+    std::string choice;
 
     displayWelcomeMessage();
 
+    std::map<std::string, std::function<void()>> menu = {
+        {"1", performBasicMath},
+        {"2", performTrigonometry},
+        {"3", performLogarithms},
+        {"4", performVectors},
+        {"5", performMatrices},
+        {"6", performComplexNumbers},
+        {"7", performBooleanAlgebra},
+        {"8", performIntegrals},
+        {"9", performDerivatives},
+        {"10", performNumericalMethods}
+    };
+
     while (true){
         displayMainMenu();
-        std::cin>>choice;
+        std::cin >> choice;
 
         if (std::cin.fail()){
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            choice = ' '; //force defult case for invalid input
+            choice.clear();
         }
-        switch (choice){
-            case '1':
-            performBasicMath();
-            break;
 
-            case '2':
-            performTrigonometry();
-            break;
+        if (choice == "q" || choice == "Q"){
+            std::cout << "Exiting Calculator. GoodBye!" << std::endl;
+            return 0;
+        }
 
-            case '3':
-            performLogarithms();
-            break;
-
-            case 'q':
-            case 'Q':
-                std::cout<<"Exiting Calculator. GoodBye!"<<std::endl;
-                return 0;
-            default:
-                std::cout<< "\n Invalid choice. Please select an Option from the menu"<<std::endl;
-                if (choice != '\n'){
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-                }
-                break;
+        auto it = menu.find(choice);
+        if (it != menu.end()){
+            it->second();
+        } else {
+            std::cout << "\n Invalid choice. Please select an Option from the menu" << std::endl;
         }
     }
+
     return 0;
 }
 
@@ -61,111 +73,16 @@ void displayMainMenu(){
     std::cout<<"1. Basic Arithmetic (+, -, *, /)"<<std::endl;
     std::cout<<"2. Trigonometry"<<std::endl;
     std::cout<<"3. Logarithms"<<std::endl;
+    std::cout<<"4. Vectors"<<std::endl;
+    std::cout<<"5. Matrices"<<std::endl;
+    std::cout<<"6. Complex Numbers"<<std::endl;
+    std::cout<<"7. Boolean Algebra"<<std::endl;
+    std::cout<<"8. Integrals"<<std::endl;
+    std::cout<<"9. Derivatives"<<std::endl;
+    std::cout<<"10. Numerical Methods\n"<<std::endl;
+
     std::cout<<"'q' to Quit"<<std::endl;
-    std::cout<<"Enter your choice: ";
+    std::cout<<"Enter your choice: \n";
 }
-void performBasicMath(){
-    char operation;
-    double result,nextNum;
 
-    std::cout << "\n ******** Basic Arithmetic ******" <<std::endl;
-    std::cout << "1. Enter an Operator (+, -, *, /)" << std::endl;
-    std::cout<<"2. Enter First Number"<<std::endl;
-    std::cout<<"3. Enter subsequent numbers or number one by one"<<std::endl;
-    std::cout<<"4. Enter '=' when you are done to see the result\n"<<std::endl;
-    std::cout <<"5. Enter 'b' as the operator to go back to the main menu "<<std::endl;
-    std::cout <<"6. Enter 'q' as the operator to quit the calculator "<<std::endl;
-
-    //Loop for REPL(Read-Eval-Print Loop)
-    while (true){
-        std::cout<<"\nEnter operation (+, -, *, /) or command (b, q): ";
-        std::cin>>operation;
-
-        if (operation=='b' || operation=='B'){
-            return;
-        }else if (operation=='q' || operation=='Q'){
-            std::cout<<"Exiting Calculator. GoodBye!"<<std::endl;
-            exit(0);
-        }
-        if (operation != '+' && operation !='-' && operation !='/' && operation !='*'){
-            std::cout<<"Invalid Operator, please try again"<<std::endl;
-
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            continue; 
-        }
-        std::cout<<"Enter First Number"<<std::endl;
-        if (!(std::cin>>result)){
-            std::cout<<"Invalid Input. Calculation aborted."<<std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            continue;
-        }
-        /*std::cin>>num1;
-        std::cout<<"Enter Subsequent Number or Numbers"<<std::endl;
-        std::cin>>num2;
-        
-        if (std::cin.fail()){
-            std::cout<<"Invalid Input. Please enter numbers values only."<<std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            continue;
-            
-        }*/
-       //double result =0.0;
-        bool calculation_error=false;
-        while (true){
-            std::cout<<"Enter next number or '=' to finish\n";
-
-            // Try to read a number
-            if (std::cin>>nextNum){ 
-                // It's a number, perform the operation
-                switch (operation){
-                    case '+':
-                        result +=nextNum;
-                        break;
-                    case '-':
-                        result -=nextNum;
-                        break;
-                    case '*':
-                        result*=nextNum;
-                        break;
-                    case '/':
-                        if (nextNum==0){
-                            std::cout <<"Error! Division by zero. Calculation aborted."<<std::endl;
-                            calculation_error=true;
-                        }else {
-                            result/=nextNum;
-                        }
-                        break;
-                }
-                if (calculation_error){
-                    break; // Exit the inner loop on error
-                }
-            } else {
-                // It's not a number, check if it's the '=' character
-                std::cin.clear(); // Clear the error state from the failed read
-                char endChar;
-                std::cin>>endChar;
-
-                if (endChar=='='){
-                    break; // User is done, break the inner loop to print the result
-                } else{
-                    std::cout<<"Invalid Input. Please enter a number or '='."<<std::endl;
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                }
-            }
-        }
-        // Clear the rest of the line to prevent issues on the next outer loop iteration
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (!calculation_error){
-            std::cout<<"Final Result: "<<result<<std::endl;
-        }
-    }
-}
-void performTrigonometry(){
-    std::cout<<" Trigonometry function is under development. Coming Soon!"<<std::endl;
-}
-void performLogarithms(){
-    std::cout<<" Logarithm function is under development. Coming Soon!"<<std::endl;
-}
     
